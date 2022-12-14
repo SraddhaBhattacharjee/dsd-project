@@ -10,8 +10,8 @@ main:
               ],
               "destinationTable": {
                 "datasetId": "dsdbq",
-                "projectId": "dsd-fall22",
-                "tableId": "generated_table"
+                "projectId": "dsd-project-371615",
+                "tableId": "dsd_bq_table"
               },
               "sourceFormat": "CSV",
               "autodetect": "true",
@@ -19,10 +19,10 @@ main:
               "fieldDelimiter": ","
             }
           }
-    - createBigQueryLoadJob:
+    - createLoadJob:
         call: http.post
         args:
-          url: https://bigquery.googleapis.com/bigquery/v2/projects/dsd-fall22/jobs
+          url: https://bigquery.googleapis.com/bigquery/v2/projects/dsd-project-371615/jobs
           body:
             configuration: ${request_body}
           headers:
@@ -42,7 +42,7 @@ main:
           - condition: ${"errorResult" in finalStatus.body.status }
             raise: ${finalStatus.body.status.errors}
 
-    - tagSourceObject:
+    - updateDatasetObject:
         call: http.put
         args:
           url: "${\"https://storage.googleapis.com/storage/v1/b/\" + args.bucket + \"/o/\" + args.object }"
@@ -55,7 +55,7 @@ main:
           auth:
             type: OAuth2
 
-    - returnResult:
+    - returnJobStatus:
         return:
           "jobStatus" : ${finalStatus}
 
@@ -73,7 +73,7 @@ sub_getJobFinalStatus:
             auth:
               type: OAuth2
           result: jobStatusRes
-      - isJobFinished:
+      - isJobDone:
           switch:
             - condition: ${jobStatusRes.body.status.state == "DONE"}
               return: ${jobStatusRes}
