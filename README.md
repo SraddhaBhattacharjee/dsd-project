@@ -77,5 +77,6 @@ The dataset file can be retrieved from https://sadmansh.dev/dsd-dataset.csv
 
 ```
 curl https://sadmansh.dev/dsd-dataset.csv | gsutil cp - gs://dsd-fall22-dataset/dsd-dataset.csv
+```
 
 Running this command will trigger the workflow via the cloud function. Which, in turn, will load the data into BQ and create the table.
